@@ -3,15 +3,18 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.32112.339
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "COM3D2.VoicePlay.Plugin", "COM3D2.VoicePlay.Plugin.csproj", "{B55FE0B4-0C92-44B1-AE24-F176BED2FB94}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "COM3D2.VoicePlayApp", "..\VoicePlayApp\COM3D2.VoicePlayApp.csproj", "{7A74C433-3434-4F01-B782-86576D921F96}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VoicePlayAppTest", "..\VoicePlayAppTest\VoicePlayAppTest.csproj", "{AC146CB0-9178-40A5-8541-B87E9A44FA13}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{56C65EB8-738D-43B1-B932-171A5A2A4E85}"
+	ProjectSection(SolutionItems) = preProject
+		readme.md = readme.md
+	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "COM3D2.PlayVoicLib", "..\PlayVoicLib\COM3D2.PlayVoicLib.csproj", "{18C5D006-5946-41C6-B6F5-CEE8ACEE5100}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "COM3D2.VoicePlay.Plugin", "COM3D2.VoicePlay\COM3D2.VoicePlay.Plugin.csproj", "{769E6E9D-5B95-4BE4-B4C6-8A04BAB633CF}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "COM3D2.VoicePlayApp", "COM3D2.VoicePlayApp\COM3D2.VoicePlayApp.csproj", "{B92BFF68-CE20-4FE6-8CCB-265D3DF07071}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VoicePlayAppTest", "COM3D2.VoicePlayAppTest\VoicePlayAppTest.csproj", "{576DE8F6-700F-4BA6-AB11-BC9E77253FCB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "COM3D2.VoicePlayLib", "COM3D2.VoicePlayLib\COM3D2.VoicePlayLib.csproj", "{18C5D006-5946-41C6-B6F5-CEE8ACEE5100}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -19,18 +22,18 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{B55FE0B4-0C92-44B1-AE24-F176BED2FB94}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{B55FE0B4-0C92-44B1-AE24-F176BED2FB94}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{B55FE0B4-0C92-44B1-AE24-F176BED2FB94}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{B55FE0B4-0C92-44B1-AE24-F176BED2FB94}.Release|Any CPU.Build.0 = Release|Any CPU
-		{7A74C433-3434-4F01-B782-86576D921F96}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{7A74C433-3434-4F01-B782-86576D921F96}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{7A74C433-3434-4F01-B782-86576D921F96}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{7A74C433-3434-4F01-B782-86576D921F96}.Release|Any CPU.Build.0 = Release|Any CPU
-		{AC146CB0-9178-40A5-8541-B87E9A44FA13}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{AC146CB0-9178-40A5-8541-B87E9A44FA13}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{AC146CB0-9178-40A5-8541-B87E9A44FA13}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{AC146CB0-9178-40A5-8541-B87E9A44FA13}.Release|Any CPU.Build.0 = Release|Any CPU
+		{769E6E9D-5B95-4BE4-B4C6-8A04BAB633CF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{769E6E9D-5B95-4BE4-B4C6-8A04BAB633CF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{769E6E9D-5B95-4BE4-B4C6-8A04BAB633CF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{769E6E9D-5B95-4BE4-B4C6-8A04BAB633CF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B92BFF68-CE20-4FE6-8CCB-265D3DF07071}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B92BFF68-CE20-4FE6-8CCB-265D3DF07071}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B92BFF68-CE20-4FE6-8CCB-265D3DF07071}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B92BFF68-CE20-4FE6-8CCB-265D3DF07071}.Release|Any CPU.Build.0 = Release|Any CPU
+		{576DE8F6-700F-4BA6-AB11-BC9E77253FCB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{576DE8F6-700F-4BA6-AB11-BC9E77253FCB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{576DE8F6-700F-4BA6-AB11-BC9E77253FCB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{576DE8F6-700F-4BA6-AB11-BC9E77253FCB}.Release|Any CPU.Build.0 = Release|Any CPU
 		{18C5D006-5946-41C6-B6F5-CEE8ACEE5100}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{18C5D006-5946-41C6-B6F5-CEE8ACEE5100}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{18C5D006-5946-41C6-B6F5-CEE8ACEE5100}.Release|Any CPU.ActiveCfg = Release|Any CPU
