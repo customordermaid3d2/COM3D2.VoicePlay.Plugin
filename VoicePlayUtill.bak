@@ -4,15 +4,18 @@ using CM3D2.Toolkit.Guest4168Branch.Arc;
 using CM3D2.Toolkit.Guest4168Branch.Arc.Entry;
 using MaidStatus;
 using Newtonsoft.Json;
+//using Newtonsoft.Json; // this bug
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
+//using System.Text.Json;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
+
 
 namespace COM3D2.VoicePlay.Plugin
 {
@@ -20,9 +23,9 @@ namespace COM3D2.VoicePlay.Plugin
     {
         public static bool isLoaded = false;
         public static bool isLoading = false;
-        internal static ManualLogSource log;
-        internal static ConfigFile config;
-        internal static Task task;
+        public static ManualLogSource log;
+        public static ConfigFile config;
+        public static Task task;
         public static string jsonPath;
 
         public static Regex regex = new Regex(@"^\d+[a-zA-Z]*$");
@@ -39,7 +42,7 @@ namespace COM3D2.VoicePlay.Plugin
         /// <summary>
         /// arc . replaceText.ToLower() , ogg
         /// </summary>
-        //public static Dictionary<string, Dictionary<string, HashSet<string>>> listArcSub2;
+     //   public static Dictionary<string, Dictionary<string, HashSet<string>>> listArcSub2;
         /// <summary>
         /// arc . replaceText.ToLower() , sub , ogg
         /// </summary>
@@ -48,24 +51,32 @@ namespace COM3D2.VoicePlay.Plugin
         /// <summary>
         /// id , replaceText.ToLower()
         /// </summary>
-        //public static Dictionary<int, string> listId;
+      //  public static Dictionary<int, string> listId;
 
         /// <summary>
         /// ogg
         /// </summary>
-        //public static HashSet<string> listAll;
+        public static HashSet<string> listAll;
         /// <summary>
         /// replaceText.ToLower() , ogg
         /// </summary>
-        //public static Dictionary<string, HashSet<string>> listSub;
+     //   public static Dictionary<string, HashSet<string>> listSub;
         /// <summary>
         /// replaceText.ToLower() , sub , ogg
         /// </summary>
         public static Dictionary<string, Dictionary<string, HashSet<string>>> listSub2;
 
-        internal static string[] rep;
-        internal static string[] sub;
-        internal static string[] ogg;
+        private static void NewMethod<T>(string s, ref T t) where T :  new()//Dictionary<string, Dictionary<string, Dictionary<string, HashSet<string>>>> ,
+        {
+            s = jsonPath + $@"\{PluginInfo.PLUGIN_GUID}-{s}.json";
+            //if (File.Exists(jsonPath + $@"\{PluginInfo.PLUGIN_GUID}-{s}.json")) t = JsonConvert.DeserializeObject<T>(File.ReadAllText(jsonPath + $@"\{PluginInfo.PLUGIN_GUID}-{s}.json"));
+            if (File.Exists(s)) {
+                t = JsonConvert.DeserializeObject<T>(File.ReadAllText(s));             
+                //t= JsonSerializer.Deserialize<T>(File.ReadAllText(s));
+            }
+            else t = new T();
+        }
+
 
         internal static void JSONLoad()
         {
@@ -74,9 +85,9 @@ namespace COM3D2.VoicePlay.Plugin
             //NewMethod("arcSub", ref listArcSub);
             //NewMethod("arcSub2", ref listArcSub2);
             //NewMethod("arcSub3", ref listArcSub3);
-            //NewMethod("all", ref listAll);
+            NewMethod("all", ref listAll);
             //NewMethod("sub", ref listSub);
-            NewMethod("sub2", ref listSub2);
+            //NewMethod("sub2", ref listSub2);
             /*
             listId = new Dictionary<int, string>();
             listAll = new HashSet<string>();
@@ -84,26 +95,20 @@ namespace COM3D2.VoicePlay.Plugin
             listSub2 = new Dictionary<string, Dictionary<string, HashSet<string>>>();
             */
         }
-
-        private static void NewMethod<T>(string s, ref T t) where T : new()
-        {
-            if (File.Exists(jsonPath + $@"\{PluginInfo.PLUGIN_GUID}-{s}.json")) t = JsonConvert.DeserializeObject<T>(File.ReadAllText(jsonPath + $@"\{PluginInfo.PLUGIN_GUID}-{s}.json"));
-            else t = new T();
-        }
-
         internal static void JSONSave()
         {
+            ;
             //File.WriteAllText(jsonPath + $@"\{PluginInfo.PLUGIN_GUID}-id.json", JsonConvert.SerializeObject(listId, Formatting.Indented)); // 자동 들여쓰기
             File.WriteAllText(jsonPath + $@"\{PluginInfo.PLUGIN_GUID}-arc.json", JsonConvert.SerializeObject(listArc, Formatting.Indented)); // 자동 들여쓰기
             //File.WriteAllText(jsonPath + $@"\{PluginInfo.PLUGIN_GUID}-arcSub.json", JsonConvert.SerializeObject(listArcSub, Formatting.Indented)); // 자동 들여쓰기
             //File.WriteAllText(jsonPath + $@"\{PluginInfo.PLUGIN_GUID}-arcSub2.json", JsonConvert.SerializeObject(listArcSub2, Formatting.Indented)); // 자동 들여쓰기
             //File.WriteAllText(jsonPath + $@"\{PluginInfo.PLUGIN_GUID}-arcSub3.json", JsonConvert.SerializeObject(listArcSub3, Formatting.Indented)); // 자동 들여쓰기
-            //File.WriteAllText(jsonPath + $@"\{PluginInfo.PLUGIN_GUID}-all.json", JsonConvert.SerializeObject(listAll, Formatting.Indented)); // 자동 들여쓰기
+            //File.WriteAllText(jsonPath + $@"\{PluginInfo.PLUGIN_GUID}-arcSub3.json", JsonSerializer.Serialize(listArcSub3)); // 자동 들여쓰기
+            File.WriteAllText(jsonPath + $@"\{PluginInfo.PLUGIN_GUID}-all.json", JsonConvert.SerializeObject(listAll, Formatting.Indented)); // 자동 들여쓰기
             //File.WriteAllText(jsonPath + $@"\{PluginInfo.PLUGIN_GUID}-sub.json", JsonConvert.SerializeObject(listSub, Formatting.Indented)); // 자동 들여쓰기
+            //File.WriteAllText(jsonPath + $@"\{PluginInfo.PLUGIN_GUID}-sub2.json", JsonSerializer.Serialize(listSub2)); // 자동 들여쓰기
             File.WriteAllText(jsonPath + $@"\{PluginInfo.PLUGIN_GUID}-sub2.json", JsonConvert.SerializeObject(listSub2, Formatting.Indented)); // 자동 들여쓰기
         }
-
-
 
         internal static void Awake(BepInEx.Logging.ManualLogSource logger, BepInEx.Configuration.ConfigFile Config)
         {
@@ -112,7 +117,20 @@ namespace COM3D2.VoicePlay.Plugin
             // GameUty.FileSystem.IsExistentFile(list[k])
             // GameUty.FileSystemOld.IsExistentFile(list[k])
 
-            jsonPath = Path.GetDirectoryName(config.ConfigFilePath);
+            //jsonPath = Path.GetDirectoryName(config.ConfigFilePath);
+
+            //testc();
+        }
+
+        private static void testc()
+        {
+            Dictionary<string, Dictionary<string, Dictionary<string, HashSet<string>>>> t=new Dictionary<string, Dictionary<string, Dictionary<string, HashSet<string>>>>();
+            t["a"]=new Dictionary<string, Dictionary<string,HashSet<string>>>();
+            t["a"]["b"] = new Dictionary<string, HashSet<string>> ();
+            t["a"]["b"]["c"]=new HashSet<string> ();
+            t["a"]["b"]["c"].Add("d1");
+            t["a"]["b"]["c"].Add("d2");
+            File.WriteAllText(jsonPath + $@"\{PluginInfo.PLUGIN_GUID}-test.json", JsonConvert.SerializeObject(t, Formatting.Indented)); // 자동 들여쓰기
         }
 
         internal static void Start()
@@ -141,14 +159,19 @@ namespace COM3D2.VoicePlay.Plugin
 
             try
             {
-                log.LogInfo($"JSONLoad");
+                //log.LogInfo($"JSONLoad");
                 JSONLoad();
+
+                //listArc = new HashSet<string>(listArcSub3.Keys);
+                //listArc = new HashSet<string>(listArcSub.Keys);
+                //listSub2 = new Dictionary<string, Dictionary<string, HashSet<string>>>();
+
                 /*
                 listId = new Dictionary<int, string>();
                 listAll = new HashSet<string>();
                 listSub = new Dictionary<string, HashSet<string>>();
-                listSub2 = new Dictionary<string, Dictionary<string, HashSet<string>>>();
                 */
+                listSub2 = new Dictionary<string, Dictionary<string, HashSet<string>>>();
 
                 //log.LogInfo($"GetAllDatas");
                 // foreach (var item in Personal.GetAllDatas(false))// Awake 단계에서 사용 불가
@@ -169,14 +192,15 @@ namespace COM3D2.VoicePlay.Plugin
 
                 var listArcTmp = GameUty.loadArchiveList.Where(s => regex2.IsMatch(s));
 
-                var listArcDel = listArc.Except(listArcTmp);
+                //var listArcDel = listArc.Except(listArcTmp);
+                //
+                //foreach (var item in listArcDel)
+                //{
+                //
+                //}
 
-                foreach (var item in listArcDel)
-                {
-
-                }
-
-                int k = 0, c1 = 0, c2 = 0;
+                int k = 0,c1=0,c2=0;
+                //string[] fname;
 
                 foreach (string fl in listArcTmp)
                 {
@@ -187,7 +211,7 @@ namespace COM3D2.VoicePlay.Plugin
                     }
                     log.LogInfo($"foreach listArcTmp {fl} run");
 
-                    listArc.Add(fl);
+                    //listArc.Add(fl);
                     //listArcSub[fl] = new HashSet<string>();
                     //listArcSub2[fl] = new Dictionary<string, HashSet<string>>();
                     //listArcSub3[fl] = new Dictionary<string, Dictionary<string, HashSet<string>>>();
@@ -199,26 +223,26 @@ namespace COM3D2.VoicePlay.Plugin
                     {
                         //log.LogInfo($"foreach ArcFileEntry {f.Name}");
                         //log.LogInfo($"f.Name , {f.Name} ");
-
-                        //listAll.Add(f.Name);
+                        c1++;
+                        listAll.Add(f.Name);
                         //listArcSub[fl].Add(f.Name);
-
-                        var fname = f.Name.Split('_', '.');
+                        /*
+                        fname = f.Name.Split('_', '.');
 
                         //log.LogInfo($"f.Name , {n.Length } , {f.Name} , {String.Join(",", n)}");
                         //log.LogInfo($"foreach ArcFileEntry1 {f.Name}");
-                        //if (!listId.ContainsValue(fname[0]))
                         if (!listSub2.ContainsKey(fname[0]))
                         {
-                            //listId[fname[0].GetHashCode()] = fname[0];
-                            //listSub[fname[0]] = new HashSet<string>();
+                        //    listId[fname[0].GetHashCode()] = fname[0];
+                        //    listSub[fname[0]] = new HashSet<string>();
                             listSub2[fname[0]] = new Dictionary<string, HashSet<string>>();
-
+                        //
                         }
                         //log.LogInfo($"foreach ArcFileEntry2 {f.Name}");
-                        //if (!listArcSub2[fl].ContainsKey(fname[0]))
+                        // arc . replaceText.ToLower() , sub , ogg
+                        //if (!listArcSub3[fl].ContainsKey(fname[0]))
                         //{
-                        //    listArcSub2[fl][fname[0]] = new HashSet<string>();
+                        //    //listArcSub2[fl][fname[0]] = new HashSet<string>();
                         //    listArcSub3[fl][fname[0]] = new Dictionary<string, HashSet<string>>();
                         //}
                         //listArcSub2[fl][fname[0]].Add(f.Name);
@@ -226,12 +250,14 @@ namespace COM3D2.VoicePlay.Plugin
                         for (int i = fname.Length - 2; i > 0; i--)
                         {
                             //if (int.TryParse(n[i], out v))
-                            if (!regex.IsMatch(fname[i])) continue;
-                            //{
+                            if (!regex.IsMatch(fname[i]))
+                                continue;
+
                             //listSub[fname[0]].Add(f.Name);
                             // h1_1234.ogg
                             // h1_1234_ex.ogg
                             // h1_ex_1234.ogg
+                            // h1_ex_1234_ga.ogg
                             switch (i)
                             {
                                 case 3:
@@ -253,37 +279,39 @@ namespace COM3D2.VoicePlay.Plugin
                                 listSub2[fname[0]][fname[k]] = new HashSet<string>();
                             }
                             listSub2[fname[0]][fname[k]].Add(f.Name);
-                            c1++;
+
+                            // arc . replaceText.ToLower() , sub , ogg
                             //if (!listArcSub3[fl][fname[0]].ContainsKey(fname[k]))
                             //{
                             //    listArcSub3[fl][fname[0]][fname[k]] = new HashSet<string>();
                             //}
                             //listArcSub3[fl][fname[0]][fname[k]].Add(f.Name);
-                            //log.LogInfo($"f.Name , {fname.Length } , {i}  , {k} , {f.Name} , {String.Join(",", fname)}");
-                            break;
+                            
+                            //if ("h6_gp02_11659.ogg" == f.Name)
+                            //{
+                            //    log.LogInfo($"f.Name , {fname.Length } , {i}  , {k} , {f.Name} , {String.Join(",", fname)}");
                             //}
+                            break;
                         }
+                        */
                     }
 
-                    log.LogInfo($"fl , {fl} , {stopwatch.ElapsedMilliseconds}");
+                    //log.LogInfo($"fl , {fl} , {stopwatch.ElapsedMilliseconds}");
                 }
 
                 /*
-                //foreach (var item in listSub)
-                //{
-                //    log.LogInfo($"listSub , {item.Key} , {item.Value.Count}");
-                //}
-                */
+                foreach (var item in listSub)
+                {
+                    log.LogInfo($"listSub , {item.Key} , {item.Value.Count}");
+                }
                 foreach (var item in listSub2)
                 {
-                    //log.LogInfo($"listSub2 , {item.Key} , {item.Value.Count}");
+                    log.LogInfo($"listSub2 , {item.Key} , {item.Value.Count}");
                     foreach (var item2 in item.Value)
                     {
-                        //log.LogInfo($"listSub2 , {item.Key} , {item2.Key} , {item2.Value.Count}");
-                        c2 += item2.Value.Count;
+                        log.LogInfo($"listSub2 , {item.Key} , {item2.Key} , {item2.Value.Count}");
                     }
                 }
-                /*
                 foreach (var item in listArcSub)
                 {
                     log.LogInfo($"listArcSub , {item.Key} , {item.Value.Count}");
@@ -296,22 +324,52 @@ namespace COM3D2.VoicePlay.Plugin
                         log.LogInfo($"listArcSub2 , {item.Key} , {item2.Key} , {item2.Value.Count}");
                     }
                 }
+                */
+
+                // arc . replaceText.ToLower() , sub , ogg
+                /*
                 foreach (var item in listArcSub3)
                 {
-                    log.LogInfo($"listArcSub3 , {item.Key} , {item.Value.Count}");
+                    //log.LogInfo($"listArcSub31 , {item.Key} , {item.Value.Count}");
+
                     foreach (var item2 in item.Value)
                     {
-                        log.LogInfo($"listArcSub3 , {item2.Key} , {item2.Key} , {item2.Value.Count}");
+                        //log.LogInfo($"listArcSub32 , {item2.Key} , {item2.Key} , {item2.Value.Count}");
+
+                        // replaceText.ToLower() , sub , ogg
+                        if (!listSub2.ContainsKey(item2.Key))
+                        {
+                            listSub2[item2.Key] = item2.Value;
+                            continue;
+                        }
+
                         foreach (var item3 in item2.Value)
                         {
-                            log.LogInfo($"listArcSub3 , {item.Key} , {item2.Key} ,{item3.Key} , {item3.Value.Count}");
+//                            c2 += item3.Value.Count;
+
+                            // sub , ogg
+                            if (!listSub2[item2.Key].ContainsKey(item3.Key))
+                            {
+                                listSub2[item2.Key][item3.Key] = item3.Value;
+                                continue;
+                            }
+
+                            listSub2[item2.Key][item3.Key].UnionWith(item3.Value);
+                            
+                            //if (item3.Value.Contains("h6_gp02_11659.ogg"))
+                            //{
+                            //    log.LogInfo($"listArcSub33 , {item.Key} , {item2.Key} ,{item3.Key} , {item3.Value.Count}");
+                            //}
                         }
                     }
                 }
                 */
-                log.LogInfo($"c , {c1} , {c2}");
+
+                listSub2Set();
+
+                log.LogInfo($"c , {c1}, {c2}");
                 //log.LogInfo($"listId , {listId.Count}");
-                log.LogInfo($"listArc , {listArc.Count}");
+                //log.LogInfo($"listArc , {listArc.Count}");
                 //log.LogInfo($"listArcSub , {listArcSub.Count}");
                 //log.LogInfo($"listArcSub2 , {listArcSub2.Count}");
                 //log.LogInfo($"listArcSub3 , {listArcSub3.Count}");
@@ -319,9 +377,6 @@ namespace COM3D2.VoicePlay.Plugin
                 //log.LogInfo($"listSub , {listSub.Count}");
                 log.LogInfo($"listSub2 , {listSub2.Count}");
 
-                rep = listSub2.Keys.ToArray();
-                NewMethod1(0);
-                NewMethod1(0,0);
 
                 JSONSave();
 
@@ -340,20 +395,52 @@ namespace COM3D2.VoicePlay.Plugin
             stopwatch.Stop(); //시간측정 끝
         }
 
-        internal static void NewMethod1(int i)
+        internal static void listSub2Set()
         {
-            sub = listSub2[rep[i]].Keys.ToArray();
-        }
-        
-        internal static void NewMethod1(int i,int j)
-        {
-            ogg = listSub2[rep[i]][sub[j]].ToArray();
-        }
+            int k = 0,c3=0;
+            foreach (var f in listAll)
+            {
+                var fname = f.Split('_', '.');
 
-        internal static void oggSet(int k)
-        {
-            //maid.AudioMan.LoadPlay(f_strFileName, fadeTime, false, isLoop);
-            GameMain.Instance.SoundMgr.PlayDummyVoice(ogg[k]);            
+                for (int i = fname.Length - 2; i > 0; i--)
+                {
+                    //if (int.TryParse(n[i], out v))
+                    if (!regex.IsMatch(fname[i]))
+                        continue;
+
+                    //listSub[fname[0]].Add(f.Name);
+                    // h1_1234.ogg
+                    // h1_1234_ex.ogg
+                    // h1_ex_1234.ogg
+                    // h1_ex_1234_ga.ogg
+                    switch (i)
+                    {
+                        case 3:
+                        case 2:
+                            k = 1;
+                            break;
+                        case 1:
+                            if (fname.Length == 3) k = 0;
+                            else k = 2;
+                            break;
+                        default:
+                            k = 0;
+                            break;
+                    }
+                    if (!listSub2.ContainsKey(fname[0]))
+                    {
+                        listSub2[fname[0]]= new Dictionary<string, HashSet<string>>();
+                    }
+                    if (!listSub2[fname[0]].ContainsKey(fname[k]))
+                    {
+                        listSub2[fname[0]][fname[k]] = new HashSet<string>();
+                    }
+                    listSub2[fname[0]][fname[k]].Add(f);
+                    c3++;
+                    break;
+                }
+            }
+            log.LogInfo($"c3 , {c3}");
         }
 
         internal static void OnApplicationQuit()

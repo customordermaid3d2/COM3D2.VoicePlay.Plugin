@@ -13,6 +13,9 @@ namespace COM3D2.VoicePlay.Plugin
         MyWindowRect myWindowRect;
         int windowId;
         private Vector2 scrollPosition=new Vector2();
+        private int rep;
+        private int sub;
+        private int ogg;
 
         public void Awake()
         {
@@ -88,7 +91,7 @@ namespace COM3D2.VoicePlay.Plugin
 
             #endregion
             
-            if (!myWindowRect.IsOpen)
+            if (!myWindowRect.IsOpen || !VoicePlayUtill.isLoaded)
             {
 
             }
@@ -97,8 +100,30 @@ namespace COM3D2.VoicePlay.Plugin
                 scrollPosition = GUILayout.BeginScrollView(scrollPosition, false, true);
 
                 #region 여기에 내용 작성
+                
+                GUILayout.Label("id");
+                rep =GUILayout.SelectionGrid(rep, VoicePlayUtill.rep,3);
+                if (GUI.changed)
+                {
+                    VoicePlayUtill.NewMethod1(rep);
+                    GUI.changed = false;
+                }
+                
+                GUILayout.Label("sub");
+                sub = GUILayout.SelectionGrid(sub, VoicePlayUtill.sub, 3);
+                if (GUI.changed)
+                {
+                    VoicePlayUtill.NewMethod1(rep,sub);
+                    GUI.changed = false;
+                }
 
-
+                GUILayout.Label("sub");
+                ogg = GUILayout.SelectionGrid(ogg, VoicePlayUtill.ogg, 2);
+                if (GUI.changed)
+                {
+                    VoicePlayUtill.oggSet(ogg);
+                    GUI.changed = false;
+                }
 
                 #endregion
 
