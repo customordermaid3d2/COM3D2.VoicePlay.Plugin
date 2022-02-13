@@ -142,6 +142,7 @@ namespace COM3D2.VoicePlay.Plugin
         {
             Logger.LogInfo("OnApplicationQuit ");
             VoicePlayUtill.OnApplicationQuit();
+            VoicePlayServer.OnApplicationQuit();
         }
 
         public void OnDisable()

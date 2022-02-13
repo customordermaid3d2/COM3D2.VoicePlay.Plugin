@@ -138,6 +138,7 @@ namespace COM3D2.VoicePlay.Plugin
             stopwatch.Start(); // 시간측정 시작
 
             log.LogInfo($"init start {stopwatch.ElapsedMilliseconds}");
+            
 
             try
             {
@@ -321,9 +322,10 @@ namespace COM3D2.VoicePlay.Plugin
 
                 rep = listSub2.Keys.ToArray();
                 NewMethod1(0);
-                NewMethod1(0,0);
+                NewMethod1(0, 0);
 
                 JSONSave();
+                VoicePlayServer.configSend();
 
                 isLoaded = true;
 
@@ -339,6 +341,7 @@ namespace COM3D2.VoicePlay.Plugin
             log.LogInfo($"init end {stopwatch.ElapsedMilliseconds}");
             stopwatch.Stop(); //시간측정 끝
         }
+
 
         internal static void NewMethod1(int i)
         {

@@ -12,6 +12,7 @@ using UnityEngine;
 using System.Threading;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
+using Newtonsoft.Json;
 
 namespace COM3D2.VoicePlay.Plugin
 {
@@ -21,93 +22,119 @@ namespace COM3D2.VoicePlay.Plugin
         private static ConfigFile config;
         
         internal static Task task;
+        private static Socket sock;
+        internal static Socket clientSock;
+        private static bool isQuit;
+        //private static int mods = 0, modr = 0;
+
+        private static Dictionary<string, string> dic;
+        private static Dictionary<string, string> mod;
 
         internal static void Awake(ManualLogSource logger, ConfigFile Config)
         {
             log = logger;
             config = Config;
 
+            // (1) 소켓 객체 생성 (TCP 소켓)
+            sock = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+            
+            // (2) 포트에 바인드            
+            sock.Bind(new IPEndPoint(IPAddress.Parse("127.0.0.1"), 7000));
+
+            // (3) 포트 Listening 시작
+            sock.Listen(10);
+
+            task = Task.Factory.StartNew(() => Accept());
         }
+
 
         internal static void Start()
         {
-            log.LogInfo("Start Server");
-            task = Task.Factory.StartNew(() => AcceptLoop());
+            log.LogInfo("Start Server");   
         }
 
-        private static Dictionary<string,string> dic = new Dictionary<string,string>();
 
-        private static void AcceptLoop()
+        internal static void configSend()
         {
-            // TcpListener 생성자에 붙는 매개변수는 
-            // 첫번째는 IP를 두번째는 port 번호입니다.
-            TcpListener server = new TcpListener(IPAddress.Any, 9999);
-
-            // 서버를 시작합니다.
-            server.Start();
-
-            // 클라이언트 객체를 만들어 9999에 연결한 client를 받아옵니다
-            // 받아올때까지 서버는 대기합니다.
-            TcpClient tcpClient = server.AcceptTcpClient();
-            NetworkStream networkStream = tcpClient.GetStream(); 
-            MemoryStream memoryStream = new MemoryStream(); 
-            BinaryFormatter binaryFormatter = new BinaryFormatter();
-
-            
-            log.LogInfo("AcceptLoop AcceptTcpClient");
-            log.LogInfo($"{tcpClient.ToString()}");
-            log.LogInfo($"{tcpClient.Client.LocalEndPoint.ToString()}");
-            log.LogInfo($"{tcpClient.Client.RemoteEndPoint.ToString()}");
-
-            dic["test"] = "test1";
-
-            //byte[] byteData;
-            while (true)
-            {
-                binaryFormatter.Serialize(memoryStream, dic);
-
-                byte[] length = BitConverter.GetBytes(memoryStream.Length); 
-                byte[] byteArray = memoryStream.ToArray();
-
-                networkStream.Write(length, 0, 4); 
-                networkStream.Write(byteArray, 0, byteArray.Length);
-
-
-
-                byte[] lengthArray = new byte[4]; 
-                networkStream.Read(lengthArray, 0, lengthArray.Length); 
-                int length = BitConverter.ToInt32(lengthArray, 0); 
-                byte[] byteArray = new byte[length]; 
-                networkStream.Read(byteArray, 0, byteArray.Length); 
-                MemoryStream memoryStream = new MemoryStream(byteArray); 
-                memoryStream.Position = 0; object obj = binaryFormatter.Deserialize(memoryStream); 
-                List<Data> datas = (List<Data>)obj;
-
-
-                // Socket은 byte[] 형식으로 데이터를 주고받으므로 byte[]형 변수를 선언합니다.
-                //byteData = new byte[1024];
-                // client가 write한 정보를 읽어옵니다.
-                // 아래의 작업 이후에 byteData에는 읽어온 데이터가 들어갑니다.
-                //tcpClient.GetStream().Read(byteData, 0, byteData.Length);
-
-                // 출력을 위해 string형으로 바꿔줍니다.
-                //string strData = Encoding.Default.GetString(byteData);
-                //
-                // byteData의 크기는 1024인데 스트림에서 읽어온 데이터가 1024보다 작은경우
-                // 공백이 출력되니 비어있는 문자열을 제거합니다.
-                //int endPoint = strData.IndexOf('\0');
-                //string parsedMessage = strData.Substring(0, endPoint + 1);
-
-                // 파싱된 데이터를 출력해주고 while루프를 돕니다.
-                //Console.WriteLine(parsedMessage);
-            }
-
-            memoryStream.Close(); 
-            networkStream.Close(); 
-            tcpClient.Close();
-
-
+            log.LogInfo("configSend");
+            Dictionary<string, string> d = new Dictionary<string, string>();
+            d["sub2.json"] = VoicePlayUtill.jsonPath + $@"\{PluginInfo.PLUGIN_GUID}-sub2.json";
+            VoicePlayServer.send(d);
         }
 
+        private static void Accept()
+        {
+            log.LogInfo("VoicePlayServer.Accept");
+
+            while (!isQuit)
+            {
+                // (4) 연결을 받아들여 새 소켓 생성 (하나의 연결만 받아들임)
+                clientSock = sock.Accept();
+
+                configSend();
+
+                log.LogInfo("AcceptTcpClient succ");
+
+                byte[] buff = new byte[8192];
+
+                while (clientSock.Connected && !isQuit)
+                {
+                    try
+                    {
+                        // (5) 소켓 수신
+                        int n = clientSock.Receive(buff);
+
+                        string data = Encoding.UTF8.GetString(buff, 0, n);
+                        dic = JsonConvert.DeserializeObject<Dictionary<string, string>>(data);
+
+                        foreach (var item in dic)
+                        {
+                            log.LogInfo("r: " + item.Key + "," + item.Value);
+                            switch (item.Key)
+                            {
+                                case "LogInfo":
+                                    log.LogInfo($"{item.Value}");
+                                    break;
+                                case "PlayDummyVoice":
+                                    GameMain.Instance.SoundMgr.PlayDummyVoice(item.Value);
+                                    break;
+                                default:
+                                    break;
+                            }
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        log.LogInfo($"{e.Message}");
+                        //modr = 0;
+                        //mods = 0;
+                    }
+                }
+                clientSock.Close();
+
+                Thread.Sleep(1000);
+            }            
+            log.LogInfo($"isQuit {isQuit}");
+        }
+
+        internal static void send(Dictionary<string, string> d)
+        {
+            //log.LogInfo("so: " + d.Key + "," + d.Value);
+            var dic = JsonConvert.SerializeObject(d);
+
+            log.LogInfo("sd: " + dic);
+
+            byte[] buff = Encoding.UTF8.GetBytes(dic);
+
+            clientSock.Send(buff, SocketFlags.None);
+        }
+
+        internal static void OnApplicationQuit()
+        {
+            isQuit = true;
+            log.LogInfo("VoicePlayServer.OnApplicationQuit");
+            sock?.Close();
+            clientSock?.Close();
+        }
     }
 }
