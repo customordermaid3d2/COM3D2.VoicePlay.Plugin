@@ -1,4 +1,6 @@
-﻿# need
+https://youtu.be/gzDhOT8l2xI
+
+# need
 
 - COM3D2.API.dll  https://github.com/DeathWeasel1337/COM3D2_Plugins/releases/download/v3/COM3D2.API.v1.0.zip
 - COM3D2.GUIAPI https://github.com/krypto5863/COM3D2.GUIAPI
