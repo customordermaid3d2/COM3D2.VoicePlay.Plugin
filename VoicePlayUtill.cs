@@ -25,7 +25,7 @@ namespace COM3D2.VoicePlay.Plugin
         internal static Task task;
         public static string jsonPath;
 
-        public static Regex regex = new Regex(@"^\d+[a-zA-Z]*$");
+        public static Regex regex = new Regex(@"^[a-zA-Z]*\d{2,}[a-zA-Z]*$");
         public static Regex regex2 = new Regex(@"^voice_.*$");
 
         /// <summary>

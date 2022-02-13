@@ -110,7 +110,7 @@ namespace COM3D2.VoicePlay.Plugin
                         //mods = 0;
                     }
                 }
-                clientSock.Close();
+                clientSock?.Close();
 
                 Thread.Sleep(1000);
             }            
@@ -126,7 +126,9 @@ namespace COM3D2.VoicePlay.Plugin
 
             byte[] buff = Encoding.UTF8.GetBytes(dic);
 
-            clientSock.Send(buff, SocketFlags.None);
+            clientSock?.Send(buff, SocketFlags.None);
+
+
         }
 
         internal static void OnApplicationQuit()
