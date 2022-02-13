@@ -26,6 +26,7 @@ namespace COM3D2.VoicePlay.Plugin
             scrollPosition = new Vector2();
 
             VoicePlayUtill.Awake(Logger,Config);
+            VoicePlayServer.Awake(Logger,Config);
         }
 
         public void OnEnable()
@@ -48,8 +49,10 @@ namespace COM3D2.VoicePlay.Plugin
             , MyUtill.ExtractResource(Resource1.icon));// 표시될 아이콘
 
             VoicePlayUtill.Start();
+            VoicePlayServer.Start();
         }
 
+        /*
         public void OnGUI()
         {
             try
@@ -133,7 +136,8 @@ namespace COM3D2.VoicePlay.Plugin
             GUI.enabled = true;
             GUI.DragWindow(); // 창 드레그 가능하게 해줌. 마지막에만 넣어야함
         }
-        
+        */
+
         public void OnApplicationQuit()
         {
             Logger.LogInfo("OnApplicationQuit ");
